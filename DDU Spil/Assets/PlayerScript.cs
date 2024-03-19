@@ -12,15 +12,17 @@ public class PlayerScript : MonoBehaviour
     private bool oneJump = true;
     private bool powerUpDoubleJump = false;
     private bool doubleJump;
-    private Rigidbody2D rb2D;
+   
     private bool PowerUpDash = false;
     private bool canDash = true;
     private bool isDashing;
     private float dashingPower = 5f;
     private float dashingTime = 0.2f;
     private float dashingCooldown = 1f;
-    private float thrust = -10f;
-    [SerializeField] private Rigidbody2D rb;
+    public float thrust = 10f;
+    private float dirX = 0f;
+    private float Horizontal;
+    [SerializeField] private Rigidbody2D rb2D;
     [SerializeField] private Transform groundCheck;
     [SerializeField] private LayerMask groundLayer;
     [SerializeField] private TrailRenderer tr;
@@ -33,10 +35,7 @@ public class PlayerScript : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (isDashing)
-        {
-            return;
-        }
+        
 
         if (PowerUpDash == false)
         {
@@ -50,12 +49,12 @@ public class PlayerScript : MonoBehaviour
 
             if (Input.GetButtonDown("Jump") && IsGrounded())
             {
-                rb.velocity = new Vector2(rb.velocity.x, jumpingPower);
+                rb2D.velocity = new Vector2(rb2D.velocity.x, jumpingPower);
             }
 
-            if (Input.GetButtonUp("Jump") && rb.velocity.y > 0f)
+            if (Input.GetButtonUp("Jump") && rb2D.velocity.y > 0f)
             {
-                rb.velocity = new Vector2(rb.velocity.x, rb.velocity.y * 0.5f);
+                rb2D.velocity = new Vector2(rb2D.velocity.x, rb2D.velocity.y * 0.5f);
             }
 
         }
@@ -72,21 +71,22 @@ public class PlayerScript : MonoBehaviour
             {
                 if (IsGrounded() || doubleJump)
                 {
-                    rb.velocity = new Vector2(rb.velocity.x, jumpingPower);
+                    rb2D.velocity = new Vector2(rb2D.velocity.x, jumpingPower);
 
                     doubleJump = !doubleJump;
                 }
             }
 
-            if (Input.GetButtonUp("Jump") && rb.velocity.y > 0f)
+            if (Input.GetButtonUp("Jump") && rb2D.velocity.y > 0f)
             {
-                rb.velocity = new Vector2(rb.velocity.x, rb.velocity.y * 0.5f);
+                rb2D.velocity = new Vector2(rb2D.velocity.x, rb2D.velocity.y * 0.5f);
             }
         }
 
         if (Input.GetKeyDown(KeyCode.LeftShift) && canDash)
         {
-            StartCoroutine(Dash());
+            Dashit();
+            Debug.Log("DASH");
         }
 
         Flip();
@@ -108,7 +108,7 @@ public class PlayerScript : MonoBehaviour
 
     private void FixedUpdate()
     {
-        rb.velocity = new Vector2(horizontal * speed, rb.velocity.y);
+        rb2D.velocity = new Vector2(horizontal * speed, rb2D.velocity.y);
 
 
         if (PowerUpDash == false)
@@ -131,22 +131,27 @@ public class PlayerScript : MonoBehaviour
             transform.localScale = localScale;  
         }
     }
-
+    private void Dashit()
+    {
+     
+        StartCoroutine(Dash());
+    }
     private IEnumerator Dash()
     {
         canDash = false;
         isDashing = true;
-        float originalGravity = rb.gravityScale;
-        rb.gravityScale = 0f;
-        rb2D.AddForce(transform.up * thrust, ForceMode2D.Impulse);
+        rb2D.velocity = new Vector2(transform.localScale.x * thrust, 0f);
         tr.emitting = true;
+        Debug.Log("CROU ");
         yield return new WaitForSeconds(dashingTime);
         tr.emitting = false;
-        rb.gravityScale = originalGravity;
+        float originalGravity = rb2D.gravityScale;
+        rb2D.gravityScale = originalGravity;
         isDashing = false;
+
         yield return new WaitForSeconds(dashingCooldown);
         canDash = true;
-
+     
         //dash = false
         // wait x time
         // can dash = true

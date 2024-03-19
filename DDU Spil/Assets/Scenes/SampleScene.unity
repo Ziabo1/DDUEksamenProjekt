@@ -137,6 +137,7 @@ GameObject:
   - component: {fileID: 85736527}
   - component: {fileID: 85736531}
   - component: {fileID: 85736532}
+  - component: {fileID: 85736533}
   m_Layer: 0
   m_Name: Player
   m_TagString: Untagged
@@ -297,7 +298,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fe15410791c786246a63f461bb6840dd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  rb: {fileID: 85736528}
+  thrust: 10
+  rb2D: {fileID: 85736528}
   groundCheck: {fileID: 328241482}
   groundLayer:
     serializedVersion: 2
@@ -416,6 +418,20 @@ TrailRenderer:
   m_Autodestruct: 0
   m_Emitting: 0
   m_ApplyActiveColorSpace: 1
+--- !u!114 &85736533
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 85736526}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f4f23c5412fb01c438402f442c633b4f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  thrust: 10
+  rb2D: {fileID: 85736528}
 --- !u!1 &328241481
 GameObject:
   m_ObjectHideFlags: 0
