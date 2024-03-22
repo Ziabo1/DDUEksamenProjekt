@@ -35,14 +35,14 @@ public class PlayerScript : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        
+       
 
         if (PowerUpDash == false)
         {
           
         }
 
-        horizontal = Input.GetAxisRaw("Horizontal");
+        horizontal = Input.GetAxisRaw("Horizontal")* speed;
 
         if (oneJump == true)
         {
@@ -83,7 +83,7 @@ public class PlayerScript : MonoBehaviour
             }
         }
 
-        if (Input.GetKeyDown(KeyCode.LeftShift) && canDash)
+        if (Input.GetKeyDown(KeyCode.LeftShift) &&  !canDash)
         {
             Dashit();
             Debug.Log("DASH");
@@ -156,5 +156,15 @@ public class PlayerScript : MonoBehaviour
         // wait x time
         // can dash = true
     }
-    
+
+    private void OnTriggerEnter(Collider collision)
+    {
+        if (collision.gameObject.tag == "CameraRemoveFromPlayer")
+        {
+            Debug.Log("Hit ");
+
+        }
+    }
+
+
 }
