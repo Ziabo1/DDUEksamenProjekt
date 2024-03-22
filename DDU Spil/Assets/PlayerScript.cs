@@ -4,15 +4,14 @@ using UnityEngine;
 
 public class PlayerScript : MonoBehaviour
 {
+    private CameraFollow cameraFollowScript;
     private float horizontal;
     private float speed = 8;
     private float jumpingPower = 8;
     private bool isFacingRight = true;
-
     private bool oneJump = true;
     private bool powerUpDoubleJump = false;
     private bool doubleJump;
-   
     private bool PowerUpDash = false;
     private bool canDash = true;
     private bool isDashing;
@@ -22,11 +21,12 @@ public class PlayerScript : MonoBehaviour
     public float thrust = 10f;
     private float dirX = 0f;
     private float Horizontal;
+    private float velocity;
     [SerializeField] private Rigidbody2D rb2D;
     [SerializeField] private Transform groundCheck;
     [SerializeField] private LayerMask groundLayer;
     [SerializeField] private TrailRenderer tr;
-
+    [SerializeField] private Rigidbody2D cameraFollowRb2D; 
 
     private void Start()
     {
@@ -35,14 +35,20 @@ public class PlayerScript : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-       
+
+        if (isDashing)
+        {
+            return;
+        }
+
+        Debug.Log(rb2D.velocity);
 
         if (PowerUpDash == false)
         {
           
         }
 
-        horizontal = Input.GetAxisRaw("Horizontal")* speed;
+        horizontal = Input.GetAxisRaw("Horizontal");
 
         if (oneJump == true)
         {
@@ -83,9 +89,9 @@ public class PlayerScript : MonoBehaviour
             }
         }
 
-        if (Input.GetKeyDown(KeyCode.LeftShift) &&  !canDash)
+        if (Input.GetKeyDown(KeyCode.LeftShift) &&  canDash)
         {
-            Dashit();
+            StartCoroutine(Dash());
             Debug.Log("DASH");
         }
 
@@ -108,8 +114,6 @@ public class PlayerScript : MonoBehaviour
 
     private void FixedUpdate()
     {
-        rb2D.velocity = new Vector2(horizontal * speed, rb2D.velocity.y);
-
 
         if (PowerUpDash == false)
         {
@@ -118,6 +122,9 @@ public class PlayerScript : MonoBehaviour
                 return;
             }
         }
+
+        rb2D.velocity = new Vector2(horizontal * speed, rb2D.velocity.y);
+
 
     }
 
@@ -140,7 +147,9 @@ public class PlayerScript : MonoBehaviour
     {
         canDash = false;
         isDashing = true;
-        rb2D.velocity = new Vector2(transform.localScale.x * thrust, 0f);
+      //  rb2D.velocity = new Vector2(transform.localScale.x * thrust, 0f);
+        rb2D.AddForce(new Vector2(transform.localScale.x * thrust, 0f), ForceMode2D.Impulse);
+        Debug.Log(rb2D.velocity);
         tr.emitting = true;
         Debug.Log("CROU ");
         yield return new WaitForSeconds(dashingTime);
@@ -156,15 +165,27 @@ public class PlayerScript : MonoBehaviour
         // wait x time
         // can dash = true
     }
+    private bool isFrozen;
 
-    private void OnTriggerEnter(Collider collision)
+    private void OnTriggerEnter2D(Collider2D collision)
     {
-        if (collision.gameObject.tag == "CameraRemoveFromPlayer")
+        if (collision.gameObject.name == "CameraRemoveFromPlayer1")
         {
             Debug.Log("Hit ");
+            CameraFollow cameraFollow = Camera.main.GetComponent<CameraFollow>(); // Or use a reference if available
+            if (cameraFollow != null)
+            {
+                // Set a default target for the camera
+                Transform defaultTarget = GameObject.Find("DefaultCameraTarget").transform;
+                cameraFollow.SetTarget(defaultTarget); // Set the default target
+            }
+            else
+            {
+                Debug.LogError("CameraFollow component not found.");
+            }
+
+
 
         }
     }
-
-
 }
